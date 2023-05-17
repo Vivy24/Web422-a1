@@ -1,0 +1,18 @@
+{
+  "name": "moviesapi",
+  "version": "1.0.0",
+  "description": "web422 assignment 1 ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vivy Vuong",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^7.1.1"
+  }
+}
