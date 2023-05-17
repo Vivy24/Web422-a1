@@ -1,35 +1,106 @@
-require("dotenv").config()
-const MoviesDB = require("./modules/moviesDB.js")
-const express = require("express")
-const cors = require("cors")
-const app = express()
-const HTTP_PORT = process.env.PORT || 8080
-const db = new MoviesDB()
+require("dotenv").config();
+const MoviesDB = require("./modules/moviesDB.js");
+const express = require("express");
+const cors = require("cors");
+const app = express();
+const HTTP_PORT = process.env.PORT || 8080;
+const db = new MoviesDB();
 
-app.use(express.json())
-app.use(cors())
+app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
-  res.json({ message: "API listening" })
-})
+  res.json({ message: "API listening" });
+});
 
-app.post("/api/movies", (req, res) => {
+app.post("/api/movies", async (req, res) => {
   try {
-    const data = req.body.movie
-    const addedMovie = db.addNewMovie(data)
-    res.json(addedMovie)
+    const data = db.Movie(req.body.movie);
+    const addedMovie = await db.addNewMovie(data);
+    res
+      .status(201)
+      .json({ message: "Created movie successfully", data: addedMovie });
   } catch (error) {
-    console.error(error)
-    res.status(500).json("Server Error")
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
-})
+});
+
+app.get("/api/movies", async (req, res) => {
+  try {
+    const page = req.query.page && +req.query.page;
+    const perPage = req.query.perPage && +req.query.perPage;
+    const title = req.query.title && req.query.title.toLowerCase();
+    if (
+      !page ||
+      !perPage ||
+      !Number.isInteger(page) ||
+      !Number.isInteger(perPage) ||
+      page < 0 ||
+      perPage < 0
+    ) {
+      res.status(400).json({ message: "Bad Request. Invalid query" });
+    } else {
+      try {
+        const movieList = await db.getAllMovies(page, perPage, title);
+        res
+          .status(200)
+          .json({ message: "Query movie list successfully", data: movieList });
+      } catch (error) {
+        res.status(400).json({ message: error });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+app.get("/api/movies/:_id", async (req, res) => {
+  try {
+    const movieId = req.params._id;
+    const movie = await db.getMovieById(movieId);
+    if (!movie) {
+      res.status(400).json({ message: "Bad Request. Not a valid movie ID" });
+    } else {
+      res
+        .status(200)
+        .json({ message: "Query movie successfully", data: movie });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+app.put("/api/movies/:_id", async (req, res) => {
+  try {
+    const movieId = req.params._id;
+    const message = await db.updateMovieById(movieId);
+    res.status(200).json({ message: message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+app.delete("/api/movies/:_id", async (req, res) => {
+  try {
+    const movieId = req.params._id;
+    const message = await db.deleteMovieById(movieId);
+    res.status(200).json({ message: message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 
 db.initialize(process.env.MONGODB_CONN_STRING)
   .then(() => {
     app.listen(HTTP_PORT, () => {
-      console.log(`server listening on: ${HTTP_PORT}`)
-    })
+      console.log(`server listening on: ${HTTP_PORT}`);
+    });
   })
   .catch((err) => {
-    console.log(err)
-  })
+    console.log(err);
+  });
