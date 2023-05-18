@@ -1,3 +1,12 @@
+/*********************************************************************************
+ *  WEB422 – Assignment 1
+ *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.
+ *  No part of this assignment has been copied manually or electronically from any other source
+ *  (including web sites) or distributed to other students.
+ *
+ *  Name: Vivy Vuong Student ID: 154776207  Date: May 18th 2023
+ *  Cyclic Link: https://real-pinafore-newt.cyclic.app
+ ********************************************************************************/
 require("dotenv").config();
 const MoviesDB = require("./modules/moviesDB.js");
 const express = require("express");
