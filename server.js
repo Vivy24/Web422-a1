@@ -39,7 +39,7 @@ app.get("/api/movies", async (req, res) => {
   try {
     const page = req.query.page && +req.query.page;
     const perPage = req.query.perPage && +req.query.perPage;
-    const title = req.query.title && req.query.title.toLowerCase();
+    const title = req.query.title
     if (
       !page ||
       !perPage ||
